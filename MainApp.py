@@ -8,6 +8,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.image import Image
 from kivy.uix.widget import Widget
 from random import randint
+from Backend import *
 
 Builder.load_string('''
 #:kivy 1.0.9
@@ -174,22 +175,8 @@ Builder.load_string('''
 '''
 )
 
-def symbol_switch(arg):
-    if (arg == 1):
-        return "H"
-    elif (arg == 2):
-        return "C"
-    elif (arg == 3):
-        return "D"
-    else:
-        return "S"
-
-class Cards:
-    def __init__(self, num, sym):
-        self.num = num
-        self.sym = sym
-
 class MainScreen(FloatLayout):
+    BackEnd = BackEnd([None],[])
     def hide_deck(self): #Hide deck (cards on middle top)
         self.ids.hide1.size_hint = (0, 0)
         self.ids.hide2.size_hint = (0, 0)
@@ -226,15 +213,6 @@ class MainScreen(FloatLayout):
         self.ids.move3.pos_hint = {"right": 0.894, 'top': 2.9}
         self.ids.move4.pos_hint = {"right": 0.896, 'top': 2.9}
 
-    deck = [None] * 52 #Initialization of list with size 52
-
-    def reset_deck(self):
-        sym_num = 0
-        for i in range(52):
-            if (i % 13 == 0):
-                sym_num += 1
-            self.deck[i] = Cards(((i % 13) + 1), symbol_switch(sym_num))
-
     card_1 = StringProperty("asset/card_background.png")
     card_2 = StringProperty("asset/card_background.png")
     card_3 = StringProperty("asset/card_background.png")
@@ -255,59 +233,42 @@ class MainScreen(FloatLayout):
         self.card_2 = "asset/card_background.png"
         self.card_3 = "asset/card_background.png"
         self.card_4 = "asset/card_background.png"
-        self.deck = [None] * 52
-        self.reset_deck()
+        self.BackEnd.reset()
         self.answer = ""
         self.point = 0
-        self.cards_remaining = len(self.deck)
+        self.cards_remaining = len(self.BackEnd.deck)
 
     def update(self, instance):
         self.reset_moving_cards()
         if (self.cards_remaining == 0):
             self.reset()
+
         else:
             #Pemanggilan Inisialisasi deck pertama kali
             if (self.first):
-                self.reset()
+                
+                self.BackEnd.reset()
+                # self.reset()
                 self.first = False
 
             #Hide Cards
             self.show_card()
-            #First Number
-            self.cards_remaining = len(self.deck)
-            idx = randint(0,self.cards_remaining-1)
-            self.cards[0].num = self.deck[idx].num
-            self.cards[0].sym = self.deck[idx].sym
-            del self.deck[idx]
+            #First Number to Fourth Number
 
-            #Second Number
-            self.cards_remaining = len(self.deck)
-            idx = randint(0,self.cards_remaining-1)
-            self.cards[1].num = self.deck[idx].num
-            self.cards[1].sym = self.deck[idx].sym
-            del self.deck[idx]
+            # Get Number process
+            numList = self.BackEnd.getNums()
+            for i in range(0,4):
+                self.cards[i].num = numList[i].num
+                self.cards[i].sym = numList[i].sym
 
-            #Third Number
-            self.cards_remaining = len(self.deck)
-            idx = randint(0,self.cards_remaining-1)
-            self.cards[2].num = self.deck[idx].num
-            self.cards[2].sym = self.deck[idx].sym
-            del self.deck[idx]
-
-            #Fourth Number
-            self.cards_remaining = len(self.deck)
-            idx = randint(0,self.cards_remaining-1)
-            self.cards[3].num = self.deck[idx].num
-            self.cards[3].sym = self.deck[idx].sym
-            del self.deck[idx]
-
-            self.cards_remaining = len(self.deck)
+            self.cards_remaining = len(self.BackEnd.deck)
             self.card_1 = "asset/" + str(self.cards[0].num) + self.cards[0].sym + ".png"
             self.card_2 = "asset/" + str(self.cards[1].num) + self.cards[1].sym + ".png"
             self.card_3 = "asset/" + str(self.cards[2].num) + self.cards[2].sym + ".png"
             self.card_4 = "asset/" + str(self.cards[3].num) + self.cards[3].sym + ".png"
-            self.answer = str(self.cards[0].num) + " + " + str(self.cards[1].num) + " + " + str(self.cards[2].num) + " + " + str(self.cards[3].num)
-            self.point = randint(1,15)
+
+            self.answer , self.point = self.BackEnd.solution([self.cards[i].num for i in range(0,4)])
+
             if (self.cards_remaining == 4):
                 self.hide_deck()
 
