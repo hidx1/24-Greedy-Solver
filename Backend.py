@@ -1,14 +1,8 @@
-from random import randint
+from random import randint, sample
 
 def symbol_switch(arg):
-    if (arg == 1):
-        return "H"
-    elif (arg == 2):
-        return "C"
-    elif (arg == 3):
-        return "D"
-    else:
-        return "S"
+    listSym = ["H","C","D","S"]
+    return listSym[arg-1]
 
 class Cards:
     def __init__(self, num, sym):
@@ -19,12 +13,11 @@ class BackEnd():
     def __init__(self, deck, scoreList):
         self.scoreList = {'+':5, '-':4, '*':3, '/':2}
         self.deck = []
+
     def getNums(self):
-        nums = []
-        for _ in range(4):
-            cards_remaining = len(self.deck)
-            idx = randint(0,cards_remaining-1)
-            nums.append(self.deck[idx])
+        availableIndex = sorted(list(sample(range(0,len(self.deck)),4)),reverse=True)
+        nums = [self.deck[idx] for idx in availableIndex]
+        for idx in availableIndex:
             del self.deck[idx]
         return nums
 
@@ -42,25 +35,21 @@ class BackEnd():
     def solution(self,listNum):
         listNum.sort()
         expr = str(listNum.pop(0))
-        for i in range (0,len(listNum)):
-            max = -50
+        for num in listNum:
+            maxPoint = -50
             for key, val in self.scoreList.items():
-                cExpr = expr
-                cExpr += key
-                cExpr += str(listNum[i])
-                if self.calcPoint(cExpr) > max:
-                    max = self.calcPoint(cExpr)
+                cExpr = expr + key + str(num)
+                if self.calcPoint(cExpr) > maxPoint:
+                    maxPoint = self.calcPoint(cExpr)
                     choice = cExpr
             expr = choice
-        points = self.calcPoint(expr)
         expr = expr + ' = ' + str(eval(expr))
-        return expr, points
+        return expr, maxPoint
         
     def calcPoint(self,expr):
         result = eval(expr)
-        score = 0
+        score = -abs(result-24)
         for key, val in self.scoreList.items():
             score += expr.count(key)*val
-        score -= abs(result-24)
         return score
 

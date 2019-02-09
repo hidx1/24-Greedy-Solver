@@ -217,10 +217,9 @@ class MainScreen(FloatLayout):
     card_2 = StringProperty("asset/card_background.png")
     card_3 = StringProperty("asset/card_background.png")
     card_4 = StringProperty("asset/card_background.png")
-    cards = [None] * 4
-    #List Initialization
-    for i in range(4):
-        cards[i] = Cards(1, "H")
+    
+    # Card list initialization
+    cards = [Cards(1, "H") for _ in range (4)]
 
     answer = StringProperty("")
     point = NumericProperty(0)
@@ -253,9 +252,8 @@ class MainScreen(FloatLayout):
 
             #Hide Cards
             self.show_card()
-            #First Number to Fourth Number
 
-            # Get Number process
+            #First Number to Fourth Number,  getting number process
             numList = self.BackEnd.getNums()
             for i in range(0,4):
                 self.cards[i].num = numList[i].num
