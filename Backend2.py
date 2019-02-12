@@ -58,7 +58,10 @@ class BackEnd():
                         if OpIdx2 > 0:
                             cExpr = '(' + cExpr + ')'
                         elif (cExpr.find('*')!=-1 and OpIdx1>cExpr.find('*')) or (cExpr.find('/')!=-1 and OpIdx1>cExpr.find('/')):
-                            cExpr = cExpr[0:OpIdx1+1] + '(' + cExpr[OpIdx1+1:] + ')'
+                            OpIdx3 = cExpr.find('*')
+                            if OpIdx3 == -1:
+                                OpIdx3 = cExpr.find('/')
+                            cExpr = cExpr[0:OpIdx3+1] + '(' + cExpr[OpIdx3+1:] + ')'
                 #persamaan yang pake kurung
                 cExpr1 = cExpr + key + str(num)
                 #persamaan yang tanpa kurung
