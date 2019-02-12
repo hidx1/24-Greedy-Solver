@@ -36,16 +36,17 @@ class BackEnd():
     def solution(self,listNum):
         listNum.sort(reverse = True)
         expr = str(listNum.pop(0))
+        cExpr1 = expr
+        TempExpr1 = cExpr1
         for num in listNum:
             maxPoint1 = -50
             maxPoint2 = -50
-            
+
             for key, val in self.scoreList.items():
-                cExpr = expr
-                
+                cExpr = TempExpr1
                 #Tambahan buat kurungnya
                 if (cExpr.find('+') != -1 or cExpr.find('-')!= -1) and (key == '*' or key =='/'):
-                    if (cExpr.count('+')+cExpr.count('-')+cExpr.count('*')+cExpr.count('/')) <= 1:
+                    if (cExpr.count('+')+cExpr.count('-')+cExpr.count('*')+cExpr.count('/')) == 1:
                         cExpr = "(" + cExpr + ")"
                     else:
                         OpIdx1 = cExpr.find('+')
@@ -56,7 +57,7 @@ class BackEnd():
                             OpIdx2 = cExpr[OpIdx1+1:].find('-')
                         if OpIdx2 > 0:
                             cExpr = '(' + cExpr + ')'
-                        else:
+                        elif (cExpr.find('*')!=-1 and OpIdx1>cExpr.find('*')) or (cExpr.find('/')!=-1 and OpIdx1>cExpr.find('/')):
                             cExpr = cExpr[0:OpIdx1+1] + '(' + cExpr[OpIdx1+1:] + ')'
                 #persamaan yang pake kurung
                 cExpr1 = cExpr + key + str(num)
@@ -69,8 +70,8 @@ class BackEnd():
                 if self.calcPoint(cExpr2) > maxPoint2:
                     maxPoint2 = self.calcPoint(cExpr2)
                     choice2 = cExpr2
-            print(choice1)
-            print(choice2)
+            TempExpr1 = choice1
+
             #yang nilainya = 24 diambil dulu
             #Kalo gaada ambil yang pointnya tertinggi antara pers. yg pake kurung
             #dan yang ngga
